@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
@@ -15,20 +14,21 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 
 public final class RepoAccessor implements IRepoAccessor {
 
-  private Path PathToRepo;
-  private List<String> FileTypes;
+  private final Path PathToRepo;
+  private final List<String> FileTypes;
 
   private static final Logger LOG = Logger.getLogger(RepoAccessor.class);
 
   public RepoAccessor(){
-    getConfigurationFromFile();
+    this.FileTypes = FileType.GetExtensions();
+    this.PathToRepo = getConfigurationFromFile();
   }
 
   private Git getGit() throws IOException {
     return Git.open(PathToRepo.toFile());
   }
 
-  private void getConfigurationFromFile() {
+  private Path getConfigurationFromFile() {
     var classLoader = getClass().getClassLoader();
     try (var inputStream = classLoader.getResourceAsStream("config.properties")) {
       if (inputStream == null) {
@@ -37,20 +37,12 @@ public final class RepoAccessor implements IRepoAccessor {
       try (var reader = new BufferedReader(
           new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
         var line = reader.readLine();
-        while (line != null) {
-          if (line.startsWith("repo-path:")) {
-            this.PathToRepo = Path.of(line.substring(line.indexOf(':') + 1));
-          }
-          if (line.startsWith("file-type:")) {
-            var types = line.substring(line.indexOf(':') + 1);
-            this.FileTypes = Arrays.asList(types.split(","));
-          }
-          line = reader.readLine();
-        }
+        return Path.of(line.substring(line.indexOf(':') + 1));
       }
     } catch (IOException e) {
       LOG.error("Failed to read config.properties", e);
     }
+    return null;
   }
 
   private boolean isCorrectFileType(String fileName) {

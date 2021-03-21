@@ -6,6 +6,10 @@ public interface IFileAccessor {
 
   void AddVersionLines(String name, String taskMessage, List<SourceFile> files);
 
+  VersionLine GetLatestVersion(SourceFile file);
+
+  String ParseLatestVersion(String fileContent, String fileName);
+
   List<VersionedSourceFile> GetFilesById(String id, boolean onlyLastCommit);
 
 }
