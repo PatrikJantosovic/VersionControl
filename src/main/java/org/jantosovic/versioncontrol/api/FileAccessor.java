@@ -1,5 +1,7 @@
 package org.jantosovic.versioncontrol.api;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -25,10 +27,13 @@ public class FileAccessor implements IFileAccessor {
 
   @Override
   public VersionLine GetLatestVersion(SourceFile file) {
-    // load file content
-    // call ParseLatestVersion
-    // parse version line to VersionLine object
-    // return VersionLine
+    try {
+      var content = Files.readString(file.getFilePath());
+      var latestVersionLine = ParseLatestVersion(content, file.getFileName());
+      return new VersionLine(latestVersionLine);
+    } catch (IOException e) {
+      LOG.error("Failed to get latest version of file.", e);
+    }
     return null;
   }
 
@@ -50,9 +55,19 @@ public class FileAccessor implements IFileAccessor {
     return null;
   }
 
-  private void AddVersionLine(String name, String taskMessage, SourceFile file){
+  private void AddVersionLine(String name, String taskMessage, SourceFile file) {
     var latest = GetLatestVersion(file);
-    ;
+    if (latest == null) {
+      LOG.error("Add version line failed for file: " + file.getFileName());
+      return;
+    }
+    var current = new VersionLine(name,
+        taskMessage,
+        latest.getVersion().Increment(file.isMajorChange()),
+        latest.getVersionPadding(),
+        latest.getNamePadding()
+    );
+
   }
 
   @Override
