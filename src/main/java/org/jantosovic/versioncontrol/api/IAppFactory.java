@@ -1,10 +1,8 @@
 package org.jantosovic.versioncontrol.api;
 
-import java.nio.file.Path;
-
 public interface IAppFactory {
 
-  IFileAccessor GetFileAccessor(Path pathToRepo);
+  IFileAccessor GetFileAccessor();
 
   IRepoAccessor GetRepoAccessor();
 

@@ -16,7 +16,7 @@ import picocli.CommandLine.Option;
 public final class GetVersionInfoCmd implements Callable<Integer> {
 
   @Option(names = {"-t", "--task"}, required = true,
-      description = "Task ID - [XX-XXXXXXXX] ")
+      description = "Task ID - [XXXXXXXX-XXXXXXX] ")
   private String TaskID;
 
   @Option(names = {"-l", "--latest"}, defaultValue = "true",
@@ -34,7 +34,7 @@ public final class GetVersionInfoCmd implements Callable<Integer> {
   @Override
   public Integer call() {
     var repoAccessor = appFactory.GetRepoAccessor();
-    var fileAccessor = appFactory.GetFileAccessor(repoAccessor.GetPathToRepo());
+    var fileAccessor = appFactory.GetFileAccessor();
     var messageBuilder = appFactory.GetMessageBuilder();
     var result = messageBuilder.GetMessage(fileAccessor.GetFilesById(TaskID, Latest));
     LOG.info("Message created:");

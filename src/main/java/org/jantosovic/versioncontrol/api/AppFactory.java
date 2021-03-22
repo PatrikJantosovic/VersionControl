@@ -1,14 +1,12 @@
 package org.jantosovic.versioncontrol.api;
 
-import java.nio.file.Path;
-
 public final class AppFactory implements IAppFactory {
 
   private static final AppFactory INSTANCE = new AppFactory();
 
   @Override
-  public IFileAccessor GetFileAccessor(Path pathToRepo) {
-    return new FileAccessor(pathToRepo);
+  public IFileAccessor GetFileAccessor() {
+    return new FileAccessor();
   }
 
   @Override

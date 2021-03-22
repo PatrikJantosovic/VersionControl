@@ -16,7 +16,7 @@ import picocli.CommandLine.Option;
 public final class AddVersionCmd implements Callable<Integer> {
 
   @Option(names = {"-t", "--task"}, required = true,
-      description = "Task ID ( [XX-XXXXXXXX] ) and description.")
+      description = "Task ID ( [XXXXXXXX-XXXXXXX] ) and description.")
   private String TaskMessage;
 
   @Option(names = {"-n", "--name"},
@@ -38,8 +38,8 @@ public final class AddVersionCmd implements Callable<Integer> {
   @Override
   public Integer call() {
     var repoAccessor = appFactory.GetRepoAccessor();
-    var fileAccessor = appFactory.GetFileAccessor(repoAccessor.GetPathToRepo());
-    if(Name == null || Name.isEmpty()){
+    var fileAccessor = appFactory.GetFileAccessor();
+    if (Name == null || Name.isEmpty()) {
       Name = System.getProperty("user.name");
     }
     fileAccessor.AddVersionLines(Name, TaskMessage, repoAccessor.GetModifiedFiles(Staged));

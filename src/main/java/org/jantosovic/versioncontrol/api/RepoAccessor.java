@@ -59,14 +59,14 @@ public final class RepoAccessor implements IRepoAccessor {
             status.getAdded()
                 .stream()
                 .filter(this::isCorrectFileType)
-                .map(SourceFile::new)
+                .map(s -> new SourceFile(this.PathToRepo.resolve(s)))
                 .collect(Collectors.toList())
         );
         files.addAll(
             status.getChanged()
                 .stream()
                 .filter(this::isCorrectFileType)
-                .map(SourceFile::new)
+                .map(s -> new SourceFile(this.PathToRepo.resolve(s)))
                 .collect(Collectors.toList())
         );
       } else {
@@ -74,14 +74,14 @@ public final class RepoAccessor implements IRepoAccessor {
             status.getModified()
                 .stream()
                 .filter(this::isCorrectFileType)
-                .map(SourceFile::new)
+                .map(s -> new SourceFile(this.PathToRepo.resolve(s)))
                 .collect(Collectors.toList())
         );
         files.addAll(
             status.getUntracked()
                 .stream()
                 .filter(this::isCorrectFileType)
-                .map(SourceFile::new)
+                .map(s -> new SourceFile(this.PathToRepo.resolve(s)))
                 .collect(Collectors.toList())
         );
       }

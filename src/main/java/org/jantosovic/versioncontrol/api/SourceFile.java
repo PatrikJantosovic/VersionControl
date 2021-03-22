@@ -10,9 +10,9 @@ public class SourceFile {
 
   private boolean MajorChange;
 
-  public SourceFile(String filePathWithFileName){
-    this.FilePath = Path.of(filePathWithFileName);
-    this.FileName = Path.of(filePathWithFileName).getFileName().toString();
+  public SourceFile(Path filePathWithFileName){
+    this.FilePath = filePathWithFileName;
+    this.FileName = filePathWithFileName.getFileName().toString();
     this.SourceFileType = FileType.GetByFileName(this.FileName);
     this.MajorChange = this.SourceFileType.isMajorChangeOnly();
   }

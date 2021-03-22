@@ -1,12 +1,14 @@
 package org.jantosovic.versioncontrol.api;
 
+import java.nio.file.Path;
+
 public final class VersionedSourceFile extends SourceFile {
 
   private final String Version;
 
   private final String Commit;
 
-  public VersionedSourceFile(String filePathWithFileName, String version, String commit) {
+  public VersionedSourceFile(Path filePathWithFileName, String version, String commit) {
     super(filePathWithFileName);
     this.Commit = commit;
     this.Version = version;

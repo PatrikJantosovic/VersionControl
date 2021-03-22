@@ -1,8 +1,9 @@
 package org.jantosovic.versioncontrol.api;
 
+import com.sun.jdi.InternalException;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
@@ -12,13 +13,7 @@ import org.apache.log4j.Logger;
  */
 public class FileAccessor implements IFileAccessor {
 
-  private final Path PathToRepo;
-
   private static final Logger LOG = Logger.getLogger(FileAccessor.class);
-
-  public FileAccessor(Path pathToRepo) {
-    PathToRepo = pathToRepo;
-  }
 
   @Override
   public void AddVersionLines(String name, String taskMessage, List<SourceFile> files) {
@@ -47,7 +42,7 @@ public class FileAccessor implements IFileAccessor {
       return matcher.group();
     }
     LOG.error("Could not find version line for given file: " + fileName);
-    return "01.01.2020 0.0  jantosovic       [XXXXXXXX-XXXXXXX] pattern matcher failed";
+    throw new InternalException();
   }
 
   @Override
@@ -67,13 +62,25 @@ public class FileAccessor implements IFileAccessor {
         latest.getVersionPadding(),
         latest.getNamePadding()
     );
+    AppendLineToFile(file, latest, current);
+  }
 
+  private static void AppendLineToFile(SourceFile file, VersionLine latest, VersionLine current) {
+    var latestLine = latest.ConstructVersionLine(file.getSourceFileType());
+    var currentLine = current.ConstructVersionLine(file.getSourceFileType());
+    try {
+      List<String> lines = Files.readAllLines(file.getFilePath(), StandardCharsets.UTF_8);
+      var position = lines.indexOf(latestLine) + 1;
+      lines.add(position, currentLine);
+      Files.write(file.getFilePath(), lines, StandardCharsets.UTF_8);
+    } catch (IOException ioe) {
+      LOG.error("IOException: %s%n", ioe);
+    }
   }
 
   @Override
   public String toString() {
     return "FileAccessor{"
-        + "PathToRepo=" + PathToRepo
         + '}';
   }
 }
