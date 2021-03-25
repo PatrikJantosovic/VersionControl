@@ -1,6 +1,7 @@
 package org.jantosovic.versioncontrol.api;
 
 import java.nio.file.Path;
+import java.util.Collection;
 
 public class SourceFile {
 
@@ -15,6 +16,17 @@ public class SourceFile {
     this.FileName = filePathWithFileName.getFileName().toString();
     this.SourceFileType = FileType.GetByFileName(this.FileName);
     this.MajorChange = this.SourceFileType.isMajorChangeOnly();
+  }
+
+  public boolean CalculateMajorChange(Collection<String> allFiles) {
+    if (this.SourceFileType.isMajorChangeOnly()) {
+      return true;
+    }
+    var fileNameWithOutExtension = this.FileName.substring(0, this.FileName.indexOf('.'));
+    return allFiles.stream()
+        .map(file -> Path.of(file).getFileName().toString())
+        .filter(file -> !file.equalsIgnoreCase(this.FileName))
+        .anyMatch(file -> file.startsWith(fileNameWithOutExtension));
   }
 
   @Override

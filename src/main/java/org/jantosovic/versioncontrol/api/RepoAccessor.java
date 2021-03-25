@@ -52,6 +52,7 @@ public final class RepoAccessor implements IRepoAccessor {
   @Override
   public List<SourceFile> GetModifiedFiles(boolean onlyStaged) {
     var files = new ArrayList<SourceFile>(10);
+    var allFiles = new ArrayList<String>(10);
     try (var git = getGit()) {
       var status = git.status().call();
       if (onlyStaged) {
@@ -69,6 +70,8 @@ public final class RepoAccessor implements IRepoAccessor {
                 .map(s -> new SourceFile(this.PathToRepo.resolve(s)))
                 .collect(Collectors.toList())
         );
+        allFiles.addAll(status.getChanged());
+        allFiles.addAll(status.getAdded());
       } else {
         files.addAll(
             status.getModified()
@@ -84,7 +87,10 @@ public final class RepoAccessor implements IRepoAccessor {
                 .map(s -> new SourceFile(this.PathToRepo.resolve(s)))
                 .collect(Collectors.toList())
         );
+        allFiles.addAll(status.getModified());
+        allFiles.addAll(status.getUntracked());
       }
+      files.forEach(file -> file.setMajorChange(file.CalculateMajorChange(allFiles)));
     } catch (IOException e) {
       LOG.error("Failed to open repository " + PathToRepo);
     } catch (GitAPIException e) {

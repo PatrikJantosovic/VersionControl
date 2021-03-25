@@ -2,7 +2,6 @@ package org.jantosovic.versioncontrol;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.nio.file.Path;
 import org.jantosovic.versioncontrol.api.FileAccessor;
 import org.junit.Test;
 
