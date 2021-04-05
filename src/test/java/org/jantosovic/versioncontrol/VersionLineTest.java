@@ -3,7 +3,6 @@ package org.jantosovic.versioncontrol;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.stream.Stream;
-import org.jantosovic.versioncontrol.api.FileType;
 import org.jantosovic.versioncontrol.api.VersionLine;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -21,8 +20,22 @@ public class VersionLineTest {
   @ParameterizedTest
   @MethodSource
   public void PackageVersionLineTest(String line){
-    var versionLine = new VersionLine(line);
-    var constructedVersionLine = versionLine.ConstructVersionLine(FileType.PACKAGE);
+    var versionLine = new VersionLine(line, 0);
+    var constructedVersionLine = versionLine.ConstructVersionLine();
+    assertThat(constructedVersionLine)
+        .isEqualTo(line);
+  }
+
+  static Stream<String> ViewVersionLineTest() {
+    return Stream.of("19.02.2015  5  jantosovic       [XXXX67X0-0X0X0X2] task"
+    );
+  }
+
+  @ParameterizedTest
+  @MethodSource
+  public void ViewVersionLineTest(String line){
+    var versionLine = new VersionLine(line, 0);
+    var constructedVersionLine = versionLine.ConstructVersionLine();
     assertThat(constructedVersionLine)
         .isEqualTo(line);
   }

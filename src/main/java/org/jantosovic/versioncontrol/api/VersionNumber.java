@@ -26,7 +26,7 @@ public class VersionNumber {
       var minor = Integer.parseInt(version.substring(dot+1, version.indexOf(' ')));
       return new VersionNumber(major, minor);
     }
-    return new VersionNumber(Integer.parseInt(version));
+    return new VersionNumber(Integer.parseInt(version.substring(0, version.indexOf(' '))));
   }
 
   public VersionNumber IncrementMajor(){
@@ -50,6 +50,24 @@ public class VersionNumber {
       return result + '.' + this.Minor;
     }
     return result;
+  }
+
+  /**
+   * Value of field Major.
+   *
+   * @return value of field Major
+   */
+  public int getMajor() {
+    return Major;
+  }
+
+  /**
+   * Value of field Minor.
+   *
+   * @return value of field Minor
+   */
+  public int getMinor() {
+    return Minor;
   }
 
   @Override

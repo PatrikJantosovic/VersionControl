@@ -5,17 +5,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public enum FileType {
-  PACKAGE("pkb", 16, false, "\\d+\\.\\d+\\.\\d+\\s+\\d+\\.\\d+\\s+\\w+\\s+\\[.+\\-.+\\]\\s+.*(?=\\r\\n\\*\\/\\r\\n(\\s+)?BEGIN(\\s+)?\\r\\n(\\s+)?RETURN)"),
-  VIEW("vw", 18, true, "\\d+\\.\\d+\\.\\d+\\s+\\d+\\s+\\w+\\s+\\[.+\\-.+\\]\\s+.*(?=\\r\\n\\*\\/\\r\\n(\\s+)?.*(\\s+)?version)");
+  PACKAGE("pkb", 3,false, "\\d+\\.\\d+\\.\\d+\\s+\\d+\\.\\d+\\s+\\w+\\s+\\[.+\\-.+\\]\\s+.*(?=\\r\\n\\*\\/\\r\\n(\\s+)?BEGIN(\\s+)?\\r\\n(\\s+)?RETURN)"),
+  VIEW("vw", 2,true, "\\d+\\.\\d+\\.\\d+\\s+\\d+\\s+\\w+\\s+\\[.+\\-.+\\]\\s+.*(?=\\r\\n\\*\\/\\r\\n(\\s+)?.*(\\s+)?version)");
 
   private final String Extension;
-  private final int NamePadding;
+  private final int VersionInfoPosition;
   private final boolean MajorChangeOnly;
   private final String RegexPattern;
 
-  FileType(String extension, int namePadding, boolean majorChangeOnly, String RegexPattern) {
+  FileType(String extension, int versionInfoPosition, boolean majorChangeOnly, String RegexPattern) {
     this.Extension = extension;
-    this.NamePadding = namePadding;
+    this.VersionInfoPosition = versionInfoPosition;
     this.MajorChangeOnly = majorChangeOnly;
     this.RegexPattern = RegexPattern;
   }
@@ -47,15 +47,6 @@ public enum FileType {
     return MajorChangeOnly;
   }
 
-  /**
-   * Value of field NamePadding.
-   *
-   * @return value of field NamePadding
-   */
-  public int getNamePadding() {
-    return NamePadding;
-  }
-
   public static FileType GetByExtension(String extension) {
     return Arrays.stream(values())
         .filter(fileType -> fileType.Extension.equalsIgnoreCase(extension))
@@ -76,5 +67,8 @@ public enum FileType {
     return Arrays.stream(values()).map(FileType::getExtension).collect(Collectors.toList());
   }
 
+  public int getVersionInfoPosition() {
+    return this.VersionInfoPosition;
+  }
 }
 

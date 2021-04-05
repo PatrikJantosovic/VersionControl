@@ -21,7 +21,9 @@ public final class VersionLine {
 
   private final int NamePadding;
 
-  public VersionLine(String name, String id, VersionNumber versionNumber, int versionPadding, int namePadding) {
+  private final int LineNumber;
+
+  public VersionLine(String name, String id, VersionNumber versionNumber, int versionPadding, int namePadding, int lineNumber) {
     var formatter = new SimpleDateFormat("dd.MM.yyyy");
     var today = Calendar.getInstance().getTime();
     this.Name = name;
@@ -30,9 +32,10 @@ public final class VersionLine {
     this.Version = versionNumber;
     this.VersionPadding = versionPadding;
     this.NamePadding = namePadding;
+    this.LineNumber = lineNumber;
   }
 
-  public VersionLine(String versionLine) {
+  public VersionLine(String versionLine, int lineNumber) {
     this.VersionDate = versionLine.substring(0, 10); // DD.MM.YYYY
     var parseToNumber = versionLine.replaceFirst(this.VersionDate, "").strip(); // now we start with verison number
     this.Version = VersionNumber.ReadVersionNumber(parseToNumber);
@@ -42,15 +45,32 @@ public final class VersionLine {
     this.Message = parseToMessage;
     this.VersionPadding = versionLine.length() - this.VersionDate.length() - parseToName.length();
     this.NamePadding = versionLine.length() - this.VersionDate.length() - this.VersionPadding - parseToMessage.length();
+    this.LineNumber = lineNumber;
   }
 
-  public String ConstructVersionLine(FileType fileType) {
+  public String ConstructVersionLine() {
     var versionNumber = this.getVersion().GetVersionNumber();
     return this.VersionDate
         + StringUtils.center(versionNumber, this.VersionPadding)
         + String.format("%1$-" + this.NamePadding + 's', this.Name)
         + this.Message
         ;
+  }
+
+  public String EditVersionInfo(String latestVersionInfo) {
+    var versionStart = StringUtils.ordinalIndexOf(latestVersionInfo, "'", 1) + 1;
+    var versionEnd = StringUtils.ordinalIndexOf(latestVersionInfo, "'", 2);
+    var version = latestVersionInfo.substring(versionStart, versionEnd);
+    var versionParts = version.split("\\.");
+    versionParts[0] = Integer.toString(this.Version.getMajor());
+    if (latestVersionInfo.contains("RETURN")) {
+      versionParts[1] = Integer.toString(this.Version.getMinor());
+      versionParts[4] = this.VersionDate.replace('.', '-');
+    } else {
+      versionParts[2] = this.VersionDate.replace('.', '-');
+    }
+    var currentVersion = StringUtils.join(versionParts, '.');
+    return latestVersionInfo.replace(version, currentVersion);
   }
 
   /**
@@ -80,6 +100,15 @@ public final class VersionLine {
     return VersionPadding;
   }
 
+  /**
+   * Value of field LineNumber.
+   *
+   * @return value of field LineNumber
+   */
+  public int getLineNumber() {
+    return LineNumber;
+  }
+
   @Override
   public String toString() {
     return "VersionLine{"
@@ -88,4 +117,5 @@ public final class VersionLine {
         + ", Message='" + Message + '\''
         + '}';
   }
+
 }
