@@ -11,6 +11,9 @@ import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.diff.DiffEntry.ChangeType;
+import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 
 public final class RepoAccessor implements IRepoAccessor {
 
@@ -52,9 +55,9 @@ public final class RepoAccessor implements IRepoAccessor {
   @Override
   public List<SourceFile> GetModifiedFiles(boolean onlyStaged) {
     var files = new ArrayList<SourceFile>(10);
-    var allFiles = new ArrayList<String>(10);
     try (var git = getGit()) {
       var status = git.status().call();
+      var allFiles = new ArrayList<String>(10);
       if (onlyStaged) {
         files.addAll(
             status.getAdded()
@@ -91,6 +94,36 @@ public final class RepoAccessor implements IRepoAccessor {
         allFiles.addAll(status.getUntracked());
       }
       files.forEach(file -> file.setMajorChange(file.CalculateMajorChange(allFiles)));
+    } catch (IOException e) {
+    LOG.error("Failed to open repository " + PathToRepo);
+  } catch (GitAPIException e) {
+    LOG.error("Git API exception " + e);
+  }
+    return files;
+  }
+
+  @Override
+  public List<SourceFile> GetFilesByCommit(String commitId) {
+    var files = new ArrayList<SourceFile>(10);
+    try (var git = getGit()) {
+      var repo = git.getRepository();
+      var walk = new RevWalk(repo);
+      var commit = walk.parseCommit(repo.resolve(commitId));
+      var parent = walk.parseCommit(commit.getParent(0).getId());
+      var reader = repo.newObjectReader();
+      var oldTreeIter = new CanonicalTreeParser();
+      oldTreeIter.reset(reader, commit);
+      var newTreeIter = new CanonicalTreeParser();
+      newTreeIter.reset(reader, parent);
+      var diffs = git.diff()
+          .setNewTree(newTreeIter)
+          .setOldTree(oldTreeIter)
+          .call();
+      for (var entry : diffs) {
+        if (entry.getChangeType() != ChangeType.DELETE && isCorrectFileType(entry.getNewPath())) {
+          files.add(new SourceFile(this.PathToRepo.resolve(entry.getNewPath())));
+        }
+      }
     } catch (IOException e) {
       LOG.error("Failed to open repository " + PathToRepo);
     } catch (GitAPIException e) {

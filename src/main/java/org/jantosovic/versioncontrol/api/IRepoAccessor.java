@@ -9,6 +9,8 @@ public interface IRepoAccessor {
 
   List<SourceFile> GetFilesById(String id, boolean onlyLastCommit);
 
+  List<SourceFile> GetFilesByCommit(String commitId);
+
   Path GetPathToRepo();
 
 }

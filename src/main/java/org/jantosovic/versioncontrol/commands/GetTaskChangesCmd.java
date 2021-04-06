@@ -13,7 +13,7 @@ import picocli.CommandLine.Option;
 @Command(name = "get",
     description = "Get commit(s), list of files and their version for given BR.",
     mixinStandardHelpOptions = true)
-public final class GetVersionInfoCmd implements Callable<Integer> {
+public final class GetTaskChangesCmd implements Callable<Integer> {
 
   @Option(names = {"-t", "--task"}, required = true,
       description = "Task ID - [XXXXXXXX-XXXXXXX] ")
@@ -25,15 +25,14 @@ public final class GetVersionInfoCmd implements Callable<Integer> {
 
   private final IAppFactory appFactory;
 
-  private static final Logger LOG = Logger.getLogger(GetVersionInfoCmd.class);
+  private static final Logger LOG = Logger.getLogger(GetTaskChangesCmd.class);
 
-  public GetVersionInfoCmd(){
+  public GetTaskChangesCmd(){
     this.appFactory = new AppFactory();
   }
 
   @Override
   public Integer call() {
-    var repoAccessor = appFactory.GetRepoAccessor();
     var fileAccessor = appFactory.GetFileAccessor();
     var messageBuilder = appFactory.GetMessageBuilder();
     var result = messageBuilder.GetMessage(fileAccessor.GetFilesById(TaskID, Latest));

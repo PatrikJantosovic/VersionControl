@@ -12,4 +12,6 @@ public interface IFileAccessor {
 
   List<VersionedSourceFile> GetFilesById(String id, boolean onlyLastCommit);
 
+  List<VersionedSourceFile> GetFilesByCommit(String commit);
+
 }
