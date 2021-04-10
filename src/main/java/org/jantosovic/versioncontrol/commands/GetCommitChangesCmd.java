@@ -10,7 +10,7 @@ import picocli.CommandLine.Option;
 /**
  *
  */
-@Command(name = "get",
+@Command(name = "getc",
     description = "Get list of files and their version for given commit.",
     mixinStandardHelpOptions = true)
 public final class GetCommitChangesCmd implements Callable<Integer> {
@@ -29,11 +29,12 @@ public final class GetCommitChangesCmd implements Callable<Integer> {
 
   @Override
   public Integer call() {
-    var fileAccessor = appFactory.GetFileAccessor();
+    var repoAccessor = appFactory.GetRepoAccessor();
     var messageBuilder = appFactory.GetMessageBuilder();
-    var result = messageBuilder.GetMessage(fileAccessor.GetFilesByCommit(CommitID));
+    var files = repoAccessor.GetFilesByCommit(CommitID);
+    var result = messageBuilder.GetMessage(files);
     LOG.info("Message created:");
-    LOG.info(result);
+    LOG.info('\n' + result);
     return 0;
   }
 

@@ -16,7 +16,7 @@ public final class AppFactory implements IAppFactory {
 
   @Override
   public IMessageBuilder GetMessageBuilder() {
-    return null;
+    return new MessageBuilder();
   }
 
 }

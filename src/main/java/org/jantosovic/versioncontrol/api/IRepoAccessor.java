@@ -7,9 +7,9 @@ public interface IRepoAccessor {
 
   List<SourceFile> GetModifiedFiles(boolean onlyStaged);
 
-  List<SourceFile> GetFilesById(String id, boolean onlyLastCommit);
+  List<VersionedSourceFile> GetFilesById(String id, boolean onlyLastCommit);
 
-  List<SourceFile> GetFilesByCommit(String commitId);
+  List<VersionedSourceFile> GetFilesByCommit(String commitId);
 
   Path GetPathToRepo();
 

@@ -6,7 +6,8 @@ import java.util.stream.Collectors;
 
 public enum FileType {
   PACKAGE("pkb", 3,false, "\\d+\\.\\d+\\.\\d+\\s+\\d+\\.\\d+\\s+\\w+\\s+\\[.+\\-.+\\]\\s+.*(?=\\r\\n\\*\\/\\r\\n(\\s+)?BEGIN(\\s+)?\\r\\n(\\s+)?RETURN)"),
-  VIEW("vw", 2,true, "\\d+\\.\\d+\\.\\d+\\s+\\d+\\s+\\w+\\s+\\[.+\\-.+\\]\\s+.*(?=\\r\\n\\*\\/\\r\\n(\\s+)?.*(\\s+)?version)");
+  VIEW("vw", 2,true, "\\d+\\.\\d+\\.\\d+\\s+\\d+\\s+\\w+\\s+\\[.+\\-.+\\]\\s+.*(?=\\r\\n\\*\\/\\r\\n(\\s+)?.*(\\s+)?version)"),
+  OTHER("", 0, false, "");
 
   private final String Extension;
   private final int VersionInfoPosition;
@@ -50,21 +51,22 @@ public enum FileType {
   public static FileType GetByExtension(String extension) {
     return Arrays.stream(values())
         .filter(fileType -> fileType.Extension.equalsIgnoreCase(extension))
-        .findFirst()
-        .get()
+        .findFirst().orElse(OTHER)
         ;
   }
 
   public static FileType GetByFileName(String fileName) {
     return Arrays.stream(values())
         .filter(fileType -> fileName.endsWith(fileType.Extension))
-        .findFirst()
-        .get()
+        .findFirst().orElse(OTHER)
         ;
   }
 
   public static List<String> GetExtensions() {
-    return Arrays.stream(values()).map(FileType::getExtension).collect(Collectors.toList());
+    return Arrays.stream(values())
+        .filter(fileType -> fileType!=OTHER)
+        .map(FileType::getExtension)
+        .collect(Collectors.toList());
   }
 
   public int getVersionInfoPosition() {

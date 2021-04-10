@@ -19,7 +19,7 @@ public final class GetTaskChangesCmd implements Callable<Integer> {
       description = "Task ID - [XXXXXXXX-XXXXXXX] ")
   private String TaskID;
 
-  @Option(names = {"-l", "--latest"}, defaultValue = "true",
+  @Option(names = {"-l", "--latest"}, defaultValue = "false",
       description = "Get information only for latest commit with this ID. Otherwise returns all commits.")
   private boolean Latest;
 
@@ -33,11 +33,12 @@ public final class GetTaskChangesCmd implements Callable<Integer> {
 
   @Override
   public Integer call() {
-    var fileAccessor = appFactory.GetFileAccessor();
+    var repoAccessor = appFactory.GetRepoAccessor();
     var messageBuilder = appFactory.GetMessageBuilder();
-    var result = messageBuilder.GetMessage(fileAccessor.GetFilesById(TaskID, Latest));
+    var files = repoAccessor.GetFilesById(TaskID, Latest);
+    var result = messageBuilder.GetMessage(files);
     LOG.info("Message created:");
-    LOG.info(result);
+    LOG.info('\n' + result);
     return 0;
   }
 

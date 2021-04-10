@@ -3,6 +3,7 @@ package org.jantosovic.versioncontrol;
 import java.util.concurrent.Callable;
 import org.apache.log4j.Logger;
 import org.jantosovic.versioncontrol.commands.AddVersionCmd;
+import org.jantosovic.versioncontrol.commands.GetCommitChangesCmd;
 import org.jantosovic.versioncontrol.commands.GetTaskChangesCmd;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -10,7 +11,7 @@ import picocli.CommandLine.Command;
 @Command(
     name = "version-control", version = "0.1",
     mixinStandardHelpOptions = true,
-    subcommands = {AddVersionCmd.class, GetTaskChangesCmd.class}
+    subcommands = {AddVersionCmd.class, GetCommitChangesCmd.class, GetTaskChangesCmd.class}
     )
 public final class App implements Callable<Integer>
 {

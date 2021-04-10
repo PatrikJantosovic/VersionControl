@@ -47,7 +47,12 @@ public class FileAccessor implements IFileAccessor {
   }
 
   @Override
-  public List<VersionedSourceFile> GetFilesById(String id, boolean onlyLastCommit) {
+  public List<VersionedSourceFile> GetFilesById(String id, boolean onlyLastCommit, List<SourceFile> files) {
+    return null;
+  }
+
+  @Override
+  public List<VersionedSourceFile> GetFilesByCommit(String commit, List<SourceFile> files) {
     return null;
   }
 

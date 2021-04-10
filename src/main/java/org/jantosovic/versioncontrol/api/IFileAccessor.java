@@ -10,8 +10,8 @@ public interface IFileAccessor {
 
   String ParseLatestVersion(String fileContent, String fileName);
 
-  List<VersionedSourceFile> GetFilesById(String id, boolean onlyLastCommit);
+  List<VersionedSourceFile> GetFilesById(String id, boolean onlyLastCommit, List<SourceFile> files);
 
-  List<VersionedSourceFile> GetFilesByCommit(String commit);
+  List<VersionedSourceFile> GetFilesByCommit(String commit, List<SourceFile> files);
 
 }

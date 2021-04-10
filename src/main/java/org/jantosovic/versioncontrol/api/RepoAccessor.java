@@ -8,10 +8,12 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 
@@ -103,38 +105,66 @@ public final class RepoAccessor implements IRepoAccessor {
   }
 
   @Override
-  public List<SourceFile> GetFilesByCommit(String commitId) {
-    var files = new ArrayList<SourceFile>(10);
+  public List<VersionedSourceFile> GetFilesByCommit(String commitId) {
+    var files = new ArrayList<VersionedSourceFile>(10);
     try (var git = getGit()) {
       var repo = git.getRepository();
       var walk = new RevWalk(repo);
-      var commit = walk.parseCommit(repo.resolve(commitId));
+      var objectId = ObjectId.fromString(commitId);
+      var commit = walk.parseCommit(objectId);
       var parent = walk.parseCommit(commit.getParent(0).getId());
       var reader = repo.newObjectReader();
       var oldTreeIter = new CanonicalTreeParser();
-      oldTreeIter.reset(reader, commit);
+      oldTreeIter.reset(reader, parent.getTree().getId());
       var newTreeIter = new CanonicalTreeParser();
-      newTreeIter.reset(reader, parent);
+      newTreeIter.reset(reader, commit.getTree().getId());
       var diffs = git.diff()
           .setNewTree(newTreeIter)
           .setOldTree(oldTreeIter)
           .call();
       for (var entry : diffs) {
-        if (entry.getChangeType() != ChangeType.DELETE && isCorrectFileType(entry.getNewPath())) {
-          files.add(new SourceFile(this.PathToRepo.resolve(entry.getNewPath())));
+        if (entry.getChangeType() != ChangeType.DELETE) {
+          files.add(new VersionedSourceFile(this.PathToRepo.resolve(entry.getNewPath()), commitId));
         }
       }
     } catch (IOException e) {
-      LOG.error("Failed to open repository " + PathToRepo);
+      LOG.error("Failed to open repository " + PathToRepo + '\n' + e);
     } catch (GitAPIException e) {
       LOG.error("Git API exception " + e);
     }
     return files;
   }
 
+  private List<String> GetCommitsById(String id) {
+    var result = new ArrayList<String>(10);
+    try (var git = getGit()) {
+      for (var commit : git.log().all().call()) {
+        var commitMessage = commit.getFullMessage();
+        if (commitMessage.contains(id)) {
+          LOG.info(commit.getId().getName());
+          result.add(commit.getId().getName());
+        }
+      }
+    } catch (IOException e) {
+      LOG.error("Failed to open repository " + PathToRepo + '\n' + e);
+    } catch (GitAPIException e) {
+      e.printStackTrace();
+    }
+    return result;
+  }
+
   @Override
-  public List<SourceFile> GetFilesById(String id, boolean onlyLastCommit) {
-    return null;
+  public List<VersionedSourceFile> GetFilesById(String id, boolean onlyLastCommit) {
+    var taskId = StringUtils.substringBetween(id, "[", "]");
+    var commits = GetCommitsById(id);
+    var files = new ArrayList<VersionedSourceFile>(10);
+    for (var commit : commits) {
+      files.addAll(GetFilesByCommit(commit));
+      if (onlyLastCommit) {
+        return files;
+      }
+    }
+    return files;
   }
 
   /**
