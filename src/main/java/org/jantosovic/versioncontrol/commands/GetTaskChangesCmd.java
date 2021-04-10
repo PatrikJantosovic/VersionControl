@@ -1,5 +1,7 @@
 package org.jantosovic.versioncontrol.commands;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
 import java.util.concurrent.Callable;
 import org.apache.log4j.Logger;
 import org.jantosovic.versioncontrol.api.AppFactory;
@@ -39,6 +41,9 @@ public final class GetTaskChangesCmd implements Callable<Integer> {
     var result = messageBuilder.GetMessage(files);
     LOG.info("Message created:");
     LOG.info('\n' + result);
+    var selection = new StringSelection(result);
+    var clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+    clipboard.setContents(selection, selection);
     return 0;
   }
 
