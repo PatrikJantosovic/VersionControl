@@ -121,7 +121,8 @@ public final class RepoAccessor implements IRepoAccessor {
       var diffs = git.diff()
           .setNewTree(newTreeIter)
           .setOldTree(oldTreeIter)
-          .call();
+          .call()
+          ;
       for (var entry : diffs) {
         if (entry.getChangeType() != ChangeType.DELETE) {
           files.add(new VersionedSourceFile(this.PathToRepo.resolve(entry.getNewPath()), commitId));

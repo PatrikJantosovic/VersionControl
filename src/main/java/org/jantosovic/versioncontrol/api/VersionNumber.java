@@ -30,7 +30,7 @@ public class VersionNumber {
   }
 
   public VersionNumber IncrementMajor(){
-    return new VersionNumber(this.Major + 1, this.Minor);
+    return new VersionNumber(this.Major + 1, 0);
   }
 
   public VersionNumber IncrementMinor(){
