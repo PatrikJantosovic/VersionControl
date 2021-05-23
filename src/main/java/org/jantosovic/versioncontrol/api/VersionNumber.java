@@ -30,6 +30,9 @@ public class VersionNumber {
   }
 
   public VersionNumber IncrementMajor(){
+    if (this.Minor == Integer.MIN_VALUE) {
+      return new VersionNumber(this.Major + 1);
+    }
     return new VersionNumber(this.Major + 1, 0);
   }
 
