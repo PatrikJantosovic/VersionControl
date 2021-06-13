@@ -4,7 +4,7 @@ public interface IAppFactory {
 
   IFileAccessor GetFileAccessor();
 
-  IRepoAccessor GetRepoAccessor();
+  IRepoAccessor GetRepoAccessor(String pathToRepo);
 
   IMessageBuilder GetMessageBuilder();
 

@@ -27,6 +27,10 @@ public final class AddVersionCmd implements Callable<Integer> {
       description = "Add version only to staged files.")
   private boolean Staged;
 
+  @Option(names = {"-r", "--repository"},
+      description = "Path to repository.")
+  private String Repo;
+
   private final IAppFactory appFactory;
 
   private static final Logger LOG = Logger.getLogger(AddVersionCmd.class);
@@ -37,7 +41,7 @@ public final class AddVersionCmd implements Callable<Integer> {
 
   @Override
   public Integer call() {
-    var repoAccessor = appFactory.GetRepoAccessor();
+    var repoAccessor = appFactory.GetRepoAccessor(Repo);
     var fileAccessor = appFactory.GetFileAccessor();
     if (Name == null || Name.isEmpty()) {
       Name = System.getProperty("user.name");

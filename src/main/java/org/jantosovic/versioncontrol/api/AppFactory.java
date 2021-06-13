@@ -10,8 +10,8 @@ public final class AppFactory implements IAppFactory {
   }
 
   @Override
-  public IRepoAccessor GetRepoAccessor() {
-    return new RepoAccessor();
+  public IRepoAccessor GetRepoAccessor(String pathToRepo) {
+    return new RepoAccessor(pathToRepo);
   }
 
   @Override

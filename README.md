@@ -29,7 +29,4 @@ There are basically two options:
 # Installation
 To use it within PL/SQL developer, just copy the .jar from release section of this project to the Plugin directory of your PL/SQL developer installation.
 
-# Customization
-Feel free to do whatever you want with the source code, but if you just want to try it out, there should be a configuration file in resources folder
-called config.properties with a path to git repository that you want to use.
 

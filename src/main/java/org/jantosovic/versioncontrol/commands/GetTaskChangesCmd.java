@@ -25,6 +25,10 @@ public final class GetTaskChangesCmd implements Callable<Integer> {
       description = "Get information only for latest commit with this ID. Otherwise returns all commits.")
   private boolean Latest;
 
+  @Option(names = {"-r", "--repository"},
+      description = "Path to repository.")
+  private String Repo;
+
   private final IAppFactory appFactory;
 
   private static final Logger LOG = Logger.getLogger(GetTaskChangesCmd.class);
@@ -35,7 +39,7 @@ public final class GetTaskChangesCmd implements Callable<Integer> {
 
   @Override
   public Integer call() {
-    var repoAccessor = appFactory.GetRepoAccessor();
+    var repoAccessor = appFactory.GetRepoAccessor(Repo);
     var messageBuilder = appFactory.GetMessageBuilder();
     var files = repoAccessor.GetFilesById(TaskID, Latest);
     var result = messageBuilder.GetMessage(files);

@@ -1,9 +1,6 @@
 package org.jantosovic.versioncontrol.api;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,30 +21,13 @@ public final class RepoAccessor implements IRepoAccessor {
 
   private static final Logger LOG = Logger.getLogger(RepoAccessor.class);
 
-  public RepoAccessor(){
+  public RepoAccessor(String pathToRepo){
     this.FileTypes = FileType.GetExtensions();
-    this.PathToRepo = getConfigurationFromFile();
+    this.PathToRepo = Path.of(pathToRepo);
   }
 
   private Git getGit() throws IOException {
     return Git.open(PathToRepo.toFile());
-  }
-
-  private Path getConfigurationFromFile() {
-    var classLoader = getClass().getClassLoader();
-    try (var inputStream = classLoader.getResourceAsStream("config.properties")) {
-      if (inputStream == null) {
-        throw new IllegalArgumentException("config.properties file not found!");
-      }
-      try (var reader = new BufferedReader(
-          new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-        var line = reader.readLine();
-        return Path.of(line.substring(line.indexOf(':') + 1));
-      }
-    } catch (IOException e) {
-      LOG.error("Failed to read config.properties", e);
-    }
-    return null;
   }
 
   private boolean isCorrectFileType(String fileName) {

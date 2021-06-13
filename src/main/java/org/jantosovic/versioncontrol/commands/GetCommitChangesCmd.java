@@ -1,7 +1,6 @@
 package org.jantosovic.versioncontrol.commands;
 
 import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.util.concurrent.Callable;
 import org.apache.log4j.Logger;
@@ -22,6 +21,10 @@ public final class GetCommitChangesCmd implements Callable<Integer> {
       description = "Commit ID - hash ")
   private String CommitID;
 
+  @Option(names = {"-r", "--repository"},
+      description = "Path to repository.")
+  private String Repo;
+
   private final IAppFactory appFactory;
 
   private static final Logger LOG = Logger.getLogger(GetCommitChangesCmd.class);
@@ -32,7 +35,7 @@ public final class GetCommitChangesCmd implements Callable<Integer> {
 
   @Override
   public Integer call() {
-    var repoAccessor = appFactory.GetRepoAccessor();
+    var repoAccessor = appFactory.GetRepoAccessor(Repo);
     var messageBuilder = appFactory.GetMessageBuilder();
     var files = repoAccessor.GetFilesByCommit(CommitID);
     var result = messageBuilder.GetMessage(files);
