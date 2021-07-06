@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public enum FileType {
-  PACKAGE("pkb", 3,false, "\\d+\\.\\d+\\.\\d+\\s+\\d+\\.\\d+\\s+\\w+\\s+\\[.+\\-.+\\]\\s+.*(?=\\r\\n\\*\\/\\r\\n(\\s+)?BEGIN(\\s+)?\\r\\n(\\s+)?RETURN)"),
-  VIEW("vw", 2,true, "\\d+\\.\\d+\\.\\d+\\s+\\d+\\s+\\w+\\s+\\[.+\\-.+\\]\\s+.*(?=\\r\\n\\*\\/\\r\\n(\\s+)?.*(\\s+)?version)"),
+  PACKAGE("pkb", 3,false, "\\d+\\.\\d+\\.\\d+\\s+\\d+\\.\\d+\\s+\\w+\\s+\\[.+\\-.+\\]\\s+.*(?=(\\r)?\\n\\*\\/(\\r)?\\n(\\s+)?BEGIN(\\s+)?(\\r)?\\n(\\s+)?RETURN)"),
+  VIEW("vw", 2,true, "\\d+\\.\\d+\\.\\d+\\s+\\d+\\s+\\w+\\s+\\[.+\\-.+\\]\\s+.*(?=(\\r)?\\n\\*\\/(\\r)?\\n(\\s+)?.*(\\s+)?(?i)(version))"),
   OTHER("", 0, false, "");
 
   private final String Extension;
